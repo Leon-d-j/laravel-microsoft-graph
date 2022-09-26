@@ -12,26 +12,25 @@ class Files extends MsGraphAdmin
     public function userid($userId)
     {
         $this->userId = $userId;
-
         return $this;
     }
 
     public function getDrives()
     {
         if ($this->userId == null) {
-            throw new Exception('userId is required.');
+            throw new Exception("userId is required.");
         }
 
-        return MsGraphAdmin::get('users/'.$this->userId.'/drives');
+        return MsGraph::get('users/'.$this->userId.'/drives');
     }
 
     public function downloadFile($id)
     {
         if ($this->userId == null) {
-            throw new Exception('userId is required.');
+            throw new Exception("userId is required.");
         }
 
-        $id = MsGraphAdmin::get('users/'.$this->userId.'/drive/items/'.$id);
+        $id = MsGraph::get('users/'.$this->userId.'/drive/items/'.$id);
 
         return redirect()->away($id['@microsoft.graph.downloadUrl']);
     }
@@ -39,9 +38,9 @@ class Files extends MsGraphAdmin
     public function deleteFile($id)
     {
         if ($this->userId == null) {
-            throw new Exception('userId is required.');
+            throw new Exception("userId is required.");
         }
 
-        return MsGraphAdmin::delete('users/'.$this->userId.'/drive/items/'.$id);
+        return MsGraph::delete('users/'.$this->userId.'/drive/items/'.$id);
     }
 }
