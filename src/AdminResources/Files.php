@@ -17,34 +17,28 @@ class Files extends MsGraphAdmin
         return $this;
     }
 
-    public function getFiles()
+    public function getFiles($siteid, $path)
     {
-        $test = $this->createFolder();
-
-        dd($test);
-        //$path = $path === null ? $type.'/drive/root/children?$orderby=name%20asc' : $type.'/drive/root:'.$this->forceStartingSlash($path).':/children';
-        $path =  '/sites/5f7a1bcb-a9ed-4e78-bb64-a2919e4e3775/drive/root:/Klanten/Klanten/Interimage B.V:/children';
-        //  $path =  '/users/leon@ready4it.nl/drive/root:/';
+        $path =  '/sites/'.$siteid.'/drive/root:'.$path.':/children';
 
         return MsGraphAdmin::get($path);
     }
 
-    public function createFolder()
+    public function createFolder($name, $siteid, $path)
     {
-        //  $path = '/sites/5f7a1bcb-a9ed-4e78-bb64-a2919e4e3775/drive/root:/children';
-        $path = '/sites/5f7a1bcb-a9ed-4e78-bb64-a2919e4e3775/drive/root:/Klanten/Klanten/Interimage B.V:/children';
+        $path =  '/sites/'.$siteid.'/drive/root:'.$path.':/children';
 
         return MsGraphAdmin::post($path, [
-            'name'                              => 'testfolder',
+            'name'                              => $name,
             'folder'                            => new \stdClass(),
             '@microsoft.graph.conflictBehavior' => 'rename',
         ]);
 
     }
 
-    public function upload($name, $uploadPath, $path = null, $type = 'me', $behavior = 'rename')
+    public function upload($name, $uploadPath, $path = null, $siteid, $behavior = 'rename')
     {
-        $uploadSession = $this->createUploadSession($name, $path, $type, $behavior);
+        $uploadSession = $this->createUploadSession($name, $path, $siteid, $behavior);
         $uploadUrl     = $uploadSession['uploadUrl'];
 
         $fragSize       = 320 * 1024;
@@ -84,12 +78,14 @@ class Files extends MsGraphAdmin
             $bytesRemaining = $bytesRemaining - $chunkSize;
             $i++;
         }
+
+        return $response;
     }
 
-    protected function createUploadSession($name, $path = null, $type = 'me', $behavior = 'rename')
+    protected function createUploadSession($name, $path = null, $siteid, $behavior = 'rename')
     {
         //$path = $path === null ? $type."/drive/root:/$name:/createUploadSession" : $type.'/drive/root:'.$this->forceStartingSlash($path)."/$name:/createUploadSession";
-        $path = '/sites/5f7a1bcb-a9ed-4e78-bb64-a2919e4e3775/drive/root:/Klanten/Klanten/Interimage B.V/testfolder/'.$name.':/createUploadSession';
+        $path = '/sites/'.$siteid.'/drive/root:'.$path.'/' .$name.':/createUploadSession';
 
         return MsGraphAdmin::post($path, [
             'item' => [
