@@ -82,10 +82,10 @@ class MsGraphAdmin
             return redirect()->away($url);
 
         } elseif (request()->has('tenant')) {
-            
+
             // With the authorization code, we can retrieve access tokens and other data.
             try {
-                
+
                 $params = [
                     'scope' => 'https://graph.microsoft.com/.default',
                     'client_id' => config('msgraph.clientId'),
@@ -222,7 +222,7 @@ class MsGraphAdmin
                 ],
                 'body' => json_encode($data),
             ]);
-            
+
             if ($response == null) {
                 return null;
             }
@@ -230,9 +230,11 @@ class MsGraphAdmin
             return json_decode($response->getBody()->getContents(), true);
 
         } catch (ClientException $e) {
-            return json_decode(($e->getResponse()->getBody()->getContents()));
+            dd($e);
+            #return json_decode(($e->getResponse()->getBody()->getContents()));
         } catch (Exception $e) {
-            return json_decode($e->getResponse()->getBody()->getContents(), true);
+            dd($e);
+            #return json_decode($e->getResponse()->getBody()->getContents(), true);
         }
     }
 
@@ -241,7 +243,7 @@ class MsGraphAdmin
         try {
             $client = new Client;
             $response = $client->post($url, ['form_params' => $params]);
-            
+
             if ($response == null) {
                 return null;
             }
@@ -267,7 +269,7 @@ class MsGraphAdmin
         {
             dd($data);
         }
-        
+
         $total = isset($data['@odata.count']) ? $data['@odata.count'] : 0;
 
         if (isset($data['@odata.nextLink'])) {
